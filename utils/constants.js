@@ -21,12 +21,19 @@ const INVALID_EMAIL_FORMAT = 'Неправильный формат почты';
 
 const SERVER_DEFAULT_MESSAGE = 'На сервере произошла ошибка.';
 
+const DEFAULT_DB_NAME = 'bitfilmsdb';
+const DEFAULT_DB_PORT = '27017';
+const DEFAULT_DB_HOST = 'localhost';
+
 const VALIDATION_ERROR = 'ValidationError';
 const PAGE_NOT_FOUND = 'Страница не существует.';
 const MONGO_DUPLICATE_ERR = 11000;
 const FILM_DELETE_SUCCESS = 'Фильм удалён.';
 
 module.exports = {
+  DEFAULT_DB_NAME,
+  DEFAULT_DB_PORT,
+  DEFAULT_DB_HOST,
   allowedCors,
   FILM_INVALID_DATA,
   FILM_NOT_FOUND,

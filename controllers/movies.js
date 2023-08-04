@@ -13,8 +13,10 @@ const ForbiddenError = require('../utils/errors/forbidden-err');
 const NotFoundError = require('../utils/errors/not-found-err');
 
 const getMovies = (req, res, next) => {
-  Movie.find({})
-    .then((cards) => res.send(cards))
+  Movie.find({ owner: req.userId })
+    .then((movies) => {
+      res.json({ movies });
+    })
     .catch(next);
 };
 

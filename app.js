@@ -7,8 +7,14 @@ const cors = require('cors');
 const { errors } = require('celebrate');
 
 const {
+  mongoUri,
+  mongoOptions,
+  cbMongoConnected,
+  cbMongoErrorConnect,
+} = require('./utils/db');
+
+const {
   PORT = 3000,
-  MONGO_LINK = 'mongodb://localhost:27017/moviesdb',
 } = process.env;
 
 const handleErrors = require('./middlewares/handleErrors');
@@ -32,7 +38,10 @@ app.use(cors({
   origin: allowedCors,
 }));
 
-mongoose.connect(MONGO_LINK);
+mongoose
+  .connect(mongoUri, mongoOptions)
+  .then(cbMongoConnected)
+  .catch(cbMongoErrorConnect);
 
 app.use(router);
 app.use(errorLogger);
