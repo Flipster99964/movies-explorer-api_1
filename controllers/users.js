@@ -2,11 +2,19 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const {
+  USER_NOT_FOUND,
+  USER_FORBIDDEN_DATA,
+  VALIDATION_ERROR,
+  USER_INVALID_DATA,
+  MONGO_DUPLICATE_ERR,
+  USER_CONFLICT_EMAIL,
+} = require('../utils/constants');
 
 const BadRequestError = require('../utils/errors/bad-request-err');
 const ConflictError = require('../utils/errors/conflict-err');
+const ForbiddenError = require('../utils/errors/forbidden-err');
 const NotFoundError = require('../utils/errors/not-found-err');
-const UnauthorizedError = require('../utils/errors/unauthorized-err');
 
 const { JWT_SECRET = 'dev-secret-key' } = process.env;
 
@@ -14,14 +22,9 @@ const getUserInfo = (req, res, next) => {
   const userId = req.user._id;
 
   User.findById(userId)
-    .orFail(new NotFoundError('Пользователь по указанному id не найден.'))
+    .orFail(new NotFoundError(USER_NOT_FOUND))
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Передан некорректный id.'));
-      }
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const updateUserInfo = (req, res, next) => {
@@ -29,10 +32,8 @@ const updateUserInfo = (req, res, next) => {
   const { name, email } = req.body;
 
   User.findById(userId).then((user) => {
-    if (JSON.stringify(userId) !== JSON.stringify(user._id)) {
-      throw new UnauthorizedError(
-        'Нельзя изменить даннные другого пользователя.',
-      );
+    if (userId.toString() !== user._id.toString()) {
+      throw new ForbiddenError(USER_FORBIDDEN_DATA);
     }
     return User.findByIdAndUpdate(
       userId,
@@ -41,22 +42,16 @@ const updateUserInfo = (req, res, next) => {
     )
       .then((userData) => {
         if (!userData) {
-          throw new NotFoundError('Пользователь с указанным id не найден.');
+          throw new NotFoundError(USER_NOT_FOUND);
         }
         return res.send(userData);
       })
       .catch((err) => {
-        if (err.name === 'ValidationError') {
-          return next(
-            new BadRequestError(
-              'Переданы некорректные данные при обновлении профиля.',
-            ),
-          );
+        if (err.name === VALIDATION_ERROR) {
+          return next(new BadRequestError(USER_INVALID_DATA));
         }
-        if (err.code === 11000) {
-            return next(
-              new ConflictError('Пользователь с таким email уже зарегистрирован.'),
-            );
+        if (err.code === MONGO_DUPLICATE_ERR) {
+          return next(new ConflictError(USER_CONFLICT_EMAIL));
         }
         return next(err);
       });
@@ -64,9 +59,7 @@ const updateUserInfo = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const {
-    name, email, password,
-  } = req.body;
+  const { name, email, password } = req.body;
 
   bcrypt.hash(password, 10).then((hash) => User.create({
     name,
@@ -78,17 +71,11 @@ const createUser = (req, res, next) => {
       email: user.email,
     }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(
-          new BadRequestError(
-            'Переданы некорректные данные при создании пользователя.',
-          ),
-        );
+      if (err.name === VALIDATION_ERROR) {
+        return next(new BadRequestError(USER_INVALID_DATA));
       }
       if (err.code === 11000) {
-        return next(
-          new ConflictError('Пользователь с таким email уже зарегистрирован.'),
-        );
+        return next(new ConflictError(USER_CONFLICT_EMAIL));
       }
       return next(err);
     }));
@@ -99,13 +86,10 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        JWT_SECRET,
-        { expiresIn: '7d' },
-      );
-      res
-        .send({ token });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: '7d',
+      });
+      res.send({ token });
     })
     .catch(next);
 };

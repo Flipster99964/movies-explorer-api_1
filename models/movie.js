@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
+const { INVALID_LINK } = require('../utils/constants');
 
 const movieSchema = new mongoose.Schema(
   {
@@ -26,30 +28,24 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
       validate: {
-        validator(v) {
-          return /^https?:\/\/(www.)?\S/i.test(v);
-        },
-        message: 'Неправильный формат ссылки.',
+        validator: (v) => validator.isURL(v),
+        message: INVALID_LINK,
       },
     },
     trailerLink: {
       type: String,
       required: true,
       validate: {
-        validator(v) {
-          return /^https?:\/\/(www.)?\S/i.test(v);
-        },
-        message: 'Неправильный формат ссылки.',
+        validator: (v) => validator.isURL(v),
+        message: INVALID_LINK,
       },
     },
     thumbnail: {
       type: String,
       required: true,
       validate: {
-        validator(v) {
-          return /^https?:\/\/(www.)?\S/i.test(v);
-        },
-        message: 'Неправильный формат ссылки.',
+        validator: (v) => validator.isURL(v),
+        message: INVALID_LINK,
       },
     },
     owner: {
@@ -58,10 +54,10 @@ const movieSchema = new mongoose.Schema(
       required: true,
     },
     movieId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'movie',
-        required: true,
-      },
+      type: Number,
+      ref: 'movie',
+      required: true,
+    },
     nameRU: {
       type: String,
       required: true,

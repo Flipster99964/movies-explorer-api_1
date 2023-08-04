@@ -32,7 +32,6 @@ app.use(cors({
   origin: allowedCors,
 }));
 
-
 mongoose.connect(MONGO_LINK);
 
 app.use(router);
@@ -40,7 +39,6 @@ app.use(errorLogger);
 app.use(errors());
 app.use(handleErrors);
 
-
 app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`)
-}) 
+  console.log(`App listening on port ${PORT}`);
+});

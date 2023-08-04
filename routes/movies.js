@@ -6,7 +6,6 @@ const {
   deleteMovie,
 } = require('../controllers/movies');
 
-
 const createMovieValidation = require('../utils/validation/createMovieValidation');
 const deleteMovieValidation = require('../utils/validation/deleteMovieValidation');
 
