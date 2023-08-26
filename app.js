@@ -14,7 +14,7 @@ const {
 } = require('./utils/db');
 
 const {
-  PORT = 3000,
+  PORT = 3001,
 } = process.env;
 
 const handleErrors = require('./middlewares/handleErrors');

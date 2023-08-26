@@ -23,7 +23,7 @@ const SERVER_DEFAULT_MESSAGE = 'На сервере произошла ошиб�
 
 const DEFAULT_DB_NAME = 'bitfilmsdb';
 const DEFAULT_DB_PORT = '27017';
-const DEFAULT_DB_HOST = 'localhost';
+const DEFAULT_DB_HOST = '0.0.0.0';
 
 const VALIDATION_ERROR = 'ValidationError';
 const PAGE_NOT_FOUND = 'Страница не существует.';
