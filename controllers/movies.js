@@ -58,7 +58,7 @@ const deleteMovie = (req, res, next) => {
     .findOneAndRemove(filmId)
     .orFail(new NotFoundError(FILM_NOT_FOUND))
     .then((movie) => {
-      if (movie.owner.toString() !== req.user._id.toString()) {
+      if (movie.owner.toString() == req.user._id.toString()) {
         return next(new ForbiddenError(FILM_FORBIDDEN_DELETE));
       }
       return movie.remove()
