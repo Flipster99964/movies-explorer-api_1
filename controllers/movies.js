@@ -53,17 +53,18 @@ const createMovie = (req, res, next) => {
 
 const deleteMovie = (req, res, next) => {
   const { filmId } = req.params;
+  console.log(req.params)
 
   Movie
-    .findOneAndRemove(filmId)
+    .findByIdAndRemove(filmId)
     .orFail(new NotFoundError(FILM_NOT_FOUND))
     .then((movie) => {
+      console.log(movie._id.toString())
+      console.log(movie.owner.toString())
+      console.log(req.user._id.toString())
       if (movie.owner.toString() !== req.user._id.toString()) {
         return next(new ForbiddenError(FILM_FORBIDDEN_DELETE));
       }
-      return movie.remove()
-        .then(() => res.send({ message: FILM_DELETE_SUCCESS }))
-        .catch((err) => next(err));
     })
     .catch((err) => next(err));
 };
