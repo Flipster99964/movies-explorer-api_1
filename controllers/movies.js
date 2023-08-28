@@ -65,7 +65,7 @@ const deleteMovie = (req, res, next) => {
         .then(() => res.send({ message: FILM_DELETE_SUCCESS }))
         .catch((err) => next(err));
     })
-    .catch((err) => console.log(err));
+    .catch((err) => next(err));
 };
 
 module.exports = {
