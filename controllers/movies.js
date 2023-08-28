@@ -61,6 +61,9 @@ const deleteMovie = (req, res, next) => {
       if (movie.owner.toString() !== req.user._id.toString()) {
         return next(new ForbiddenError(FILM_FORBIDDEN_DELETE));
       }
+      return movie.remove()
+        .then(() => res.send({ message: FILM_DELETE_SUCCESS }))
+        .catch((err) => next(err));
     })
     .catch((err) => console.log(err));
 };
