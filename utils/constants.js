@@ -2,6 +2,7 @@ const allowedCors = [
   'https://api.flipster99964.student.nomoredomains.club',
   'http://api.flipster99964.student.nomoredomains.club',
   'http://localhost:3000',
+  'http://localhost:3001',
 ];
 
 const FILM_INVALID_DATA = 'Переданы некорректные данные при создании фильма.';
